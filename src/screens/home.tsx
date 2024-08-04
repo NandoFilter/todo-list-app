@@ -45,10 +45,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1E6F9F'
+  },
+  content: {
+    flex: 1,
+    marginTop: 60
+  },
+  stats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+    paddingLeft: 20,
+    paddingRight: 20
+  },
+  statsBlock: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  statsLabel: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  statsCount: {
+    color: '#D9D9D9',
+    backgroundColor: '#333',
+    borderRadius: 10,
+
+    paddingLeft: 10,
+    paddingRight: 10,
+
+    alignSelf: 'center'
   }
 });
 
 export function Home() {
+  const stats = [
+    { id: 0, label: 'Criadas', color: '#4EA8DE', count: 0 },
+    { id: 1, label: 'Concluídas', color: '#8284FA', count: 0 }
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -63,6 +97,21 @@ export function Home() {
           <TouchableOpacity style={styles.button}>
             <Image source={require('../../assets/plus.png')} />
           </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.content}>
+        <View style={styles.stats}>
+          {stats.map((s) => {
+            return (
+              <View style={styles.statsBlock} key={s.id}>
+                <Text style={[styles.statsLabel, { color: s.color }]}>
+                  {s.label}
+                </Text>
+                <Text style={styles.statsCount}>{s.count}</Text>
+              </View>
+            );
+          })}
         </View>
       </View>
     </View>
