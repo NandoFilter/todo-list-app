@@ -1,4 +1,12 @@
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import {
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  FlatList
+} from 'react-native';
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -74,10 +82,26 @@ const styles = StyleSheet.create({
     paddingRight: 10,
 
     alignSelf: 'center'
+  },
+  emptyList: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    borderTopColor: '#333',
+    borderTopWidth: 1,
+
+    margin: 20,
+    padding: 45,
+    gap: 15
+  },
+  emptyListLabel: {
+    color: '#808080'
   }
 });
 
 export function Home() {
+  const [items, setItems] = useState([]);
+
   const stats = [
     { id: 0, label: 'Criadas', color: '#4EA8DE', count: 0 },
     { id: 1, label: 'Concluídas', color: '#8284FA', count: 0 }
@@ -113,6 +137,25 @@ export function Home() {
             );
           })}
         </View>
+
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => <Text>{item}</Text>}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyList}>
+              <Image source={require('../../assets/empty_list.png')} />
+              <View>
+                <Text style={[styles.emptyListLabel, { fontWeight: 'bold' }]}>
+                  Você ainda não tem tarefas cadastradas
+                </Text>
+                <Text style={styles.emptyListLabel}>
+                  Crie tarefas e organize seus itens a fazer
+                </Text>
+              </View>
+            </View>
+          )}
+        />
       </View>
     </View>
   );
