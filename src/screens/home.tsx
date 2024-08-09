@@ -5,7 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  FlatList
+  FlatList,
+  Keyboard
 } from 'react-native';
 import { StyleSheet } from 'react-native';
 
@@ -38,7 +39,6 @@ const styles = StyleSheet.create({
 
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#0D0D0D',
 
     color: '#F2F2F2',
     fontSize: 16,
@@ -100,12 +100,22 @@ const styles = StyleSheet.create({
 });
 
 export function Home() {
+  const [isFocused, setIsFocused] = useState(false);
   const [items, setItems] = useState([]);
 
   const stats = [
     { id: 0, label: 'Criadas', color: '#4EA8DE', count: 0 },
     { id: 1, label: 'Concluídas', color: '#8284FA', count: 0 }
   ];
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    Keyboard.dismiss();
+  };
 
   return (
     <View style={styles.container}>
@@ -114,7 +124,12 @@ export function Home() {
 
         <View style={styles.form}>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              { borderColor: isFocused ? '#8284FA' : '#0D0D0D' }
+            ]}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             placeholder="Adicione uma nova tarefa"
             placeholderTextColor={'#808080'}
           />
