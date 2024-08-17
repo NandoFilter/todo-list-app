@@ -1,15 +1,17 @@
+import { Task } from '@/@types/Task';
+import { EmptyList, Logo, Plus } from '@/assets/svg';
+import { TaskItem } from '@/components/TaskItem';
 import { useState } from 'react';
 import {
-  Image,
+  Alert,
+  FlatList,
+  Keyboard,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-  FlatList,
-  Keyboard
+  View
 } from 'react-native';
-import { StyleSheet } from 'react-native';
-import { Logo, Plus, EmptyList } from '@/assets/svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +93,8 @@ const styles = StyleSheet.create({
     borderTopColor: '#333',
     borderTopWidth: 1,
 
-    margin: 20,
+    marginLeft: 20,
+    marginRight: 20,
     padding: 45,
     gap: 15
   },
@@ -102,11 +105,20 @@ const styles = StyleSheet.create({
 
 export function Home() {
   const [isFocused, setIsFocused] = useState(false);
-  const [items, setItems] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskName, setTaskName] = useState('');
+
+  const [createdCount, setCreatedCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
 
   const stats = [
-    { id: 0, label: 'Criadas', color: '#4EA8DE', count: 0 },
-    { id: 1, label: 'Concluídas', color: '#8284FA', count: 0 }
+    { id: 0, label: 'Criadas', color: '#4EA8DE', count: createdCount },
+    {
+      id: 1,
+      label: 'Concluídas',
+      color: '#8284FA',
+      count: completedCount
+    }
   ];
 
   const handleFocus = () => {
@@ -116,6 +128,65 @@ export function Home() {
   const handleBlur = () => {
     setIsFocused(false);
     Keyboard.dismiss();
+  };
+
+  const handleCreateTask = () => {
+    let task: Task = {
+      title: taskName.trim(),
+      isChecked: false
+    };
+
+    if (!task) {
+      return Alert.alert('Valor inválido', 'Preencha o campo corretamente');
+    }
+
+    if (tasks.includes(task)) {
+      return Alert.alert(
+        'Tarefa existente',
+        'Essa tarefa já foi criada anteriormente'
+      );
+    }
+
+    setTasks((prevState) => [...prevState, task]);
+    setTaskName('');
+    setCreatedCount(createdCount + 1);
+  };
+
+  const handleDeleteTask = (task: Task) => {
+    Alert.alert('Remover', `Remover a tarefa "${task.title}"?`, [
+      {
+        text: 'Sim',
+        onPress: () => {
+          setTasks((prevState) =>
+            prevState.filter((t) => t.title !== task.title)
+          );
+
+          if (task.isChecked) {
+            setCompletedCount(completedCount - 1);
+          }
+
+          setCreatedCount(createdCount - 1);
+        }
+      },
+      {
+        text: 'Não',
+        style: 'cancel'
+      }
+    ]);
+  };
+
+  const handleSetIsChecked = (taskToUpdate: Task) => {
+    const newValue = !taskToUpdate.isChecked;
+
+    setTasks((prevState) =>
+      prevState.map((task) =>
+        task.title === taskToUpdate.title
+          ? { ...task, isChecked: newValue }
+          : task
+      )
+    );
+
+    setCompletedCount(newValue ? completedCount + 1 : completedCount - 1);
   };
 
   return (
@@ -133,8 +204,10 @@ export function Home() {
             onBlur={handleBlur}
             placeholder="Adicione uma nova tarefa"
             placeholderTextColor={'#808080'}
+            onChangeText={setTaskName}
+            value={taskName}
           />
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleCreateTask}>
             <Plus />
           </TouchableOpacity>
         </View>
@@ -155,9 +228,16 @@ export function Home() {
         </View>
 
         <FlatList
-          data={items}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => <Text>{item}</Text>}
+          data={tasks}
+          keyExtractor={(item: Task) => item.title}
+          style={{ marginTop: 20 }}
+          renderItem={({ item }) => (
+            <TaskItem
+              task={item}
+              handleSetIsChecked={handleSetIsChecked}
+              handleDelete={handleDeleteTask}
+            />
+          )}
           ListEmptyComponent={() => (
             <View style={styles.emptyList}>
               <EmptyList />
