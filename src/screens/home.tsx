@@ -9,6 +9,7 @@ import {
   Keyboard
 } from 'react-native';
 import { StyleSheet } from 'react-native';
+import { Logo, Plus, EmptyList } from '@/assets/svg';
 
 const styles = StyleSheet.create({
   container: {
@@ -120,7 +121,7 @@ export function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/logo.png')} />
+        <Logo />
 
         <View style={styles.form}>
           <TextInput
@@ -134,7 +135,7 @@ export function Home() {
             placeholderTextColor={'#808080'}
           />
           <TouchableOpacity style={styles.button}>
-            <Image source={require('../../assets/plus.png')} />
+            <Plus />
           </TouchableOpacity>
         </View>
       </View>
@@ -159,7 +160,7 @@ export function Home() {
           renderItem={({ item }) => <Text>{item}</Text>}
           ListEmptyComponent={() => (
             <View style={styles.emptyList}>
-              <Image source={require('../../assets/empty_list.png')} />
+              <EmptyList />
               <View>
                 <Text style={[styles.emptyListLabel, { fontWeight: 'bold' }]}>
                   Você ainda não tem tarefas cadastradas
